@@ -3,47 +3,550 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Tic-Tac-Toe (Level 3)</title>
+    <title>Ultimate Tic-Tac-Toe</title>
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
-    <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --text-color: #333;
-            --accent: #4a90e2;
-            --line-thin: #ccc;
-            --line-med: #888;
-            --line-thick: #000;
-        }
+<style>
+  :root {
+    /* LIGHT THEME (Default) */
+    --bg-color: #fbfbfb;
+    --board-bg: #ffffff;
+    --nyt-black: #121212;
+    --highlight-blue: #a7d8ff;
+    --legal-move-gold: #fff9c4; 
+    --dimmed-cell: #fcfcfc;
+    --line-thin: #e6e6e6;
+    --line-med: #888;
+    --line-thick: #000;
+    --text-subtle: #666;
+    --btn-hover: #f0f0f0;
+    
+    /* Font Variables */
+    --font-title: 'Playfair Display', serif;
+    --font-ui: 'Libre Franklin', sans-serif;
+    
+    /* Glows (Default none) */
+    --glow-text: none;
+    --glow-box: none;
 
-        body.dark-theme { --bg-color: #1a1a1a; --text-color: #f0f2f5; --line-thin: #444; --line-med: #666; --line-thick: #aaa; }
-        body.newspaper-theme { --bg-color: #f4e4bc; --text-color: #2c2c2c; --line-thick: #1a1a1a; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            transition: background 0.3s;
-        }
+    /* Chat Bubble Colors (Light Mode) */
+    --chat-bg-x: #ffdede; /* Very Muted Red */
+    --chat-bg-o: #deeeff; /* Very Muted Blue */
+    --chat-text: #121212;
 
-        /* --- SCREENS --- */
-        .screen {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--bg-color);
-            z-index: 10;
-            transition: opacity 0.3s;
-        }
+    /* Gradient placeholders */
+    --gradient-btn: var(--nyt-black);
+  }
+
+  /* DARK THEME OVERRIDES */
+  body.dark-theme {
+    --bg-color: #121212;
+    --board-bg: #1e1e1e;
+    --nyt-black: #e0e0e0;
+    --highlight-blue: #2a4b70;
+    --legal-move-gold: #4a4a4a; 
+    --dimmed-cell: #252525;
+    --line-thin: #333;
+    --line-med: #555;
+    --line-thick: #e0e0e0;
+    --text-subtle: #aaa;
+    --btn-hover: #333;
+
+    /* Chat Bubble Colors (Dark Mode) */
+    --chat-bg-x: #4a2b2b; /* Dark Muted Red */
+    --chat-bg-o: #2b3a4a; /* Dark Muted Blue */
+    --chat-text: #e0e0e0;
+  }
+
+  /* STRANGER THINGS THEME */
+  body.stranger-theme {
+    --bg-color: #080000;
+    --board-bg: #000000;
+    --nyt-black: #ff1e1e; 
+    --highlight-blue: #222; 
+    --legal-move-gold: #450a0a; 
+    --dimmed-cell: #110000;
+    --line-thin: #550000;
+    --line-med: #aa0000;
+    --line-thick: #ff0000;
+    --text-subtle: #990000;
+    --btn-hover: #1a0000;
+    
+    --glow-text: 0 0 8px rgba(255, 30, 30, 0.6);
+    --glow-box: 0 0 15px rgba(255, 0, 0, 0.4);
+
+    --chat-bg-x: #400000; 
+    --chat-bg-o: #222; 
+    --chat-text: #ff1e1e;
+  }
+
+  /* SHOWGIRL THEME */
+  body.showgirl-theme {
+    --bg-color: #fff0e0; 
+    --board-bg: #fffbf0;
+    --nyt-black: #e65100; 
+    --highlight-blue: #00c897; 
+    --legal-move-gold: #ffe0b2; 
+    --dimmed-cell: #fff8ec;
+    --line-thin: #ffcc80;
+    --line-med: #ff9800;
+    --line-thick: #e65100;
+    --text-subtle: #bf360c;
+    --btn-hover: #ffe0b2;
+    
+    --glow-text: 0 0 5px rgba(255, 160, 0, 0.4);
+    --glow-box: 0 0 12px rgba(255, 160, 0, 0.3);
+
+    --chat-bg-x: #c8ffe8; 
+    --chat-bg-o: #ffe0b2; 
+    --chat-text: #e65100;
+  }
+  
+  body.showgirl-theme #board,
+  body.showgirl-theme .screen,
+  body.showgirl-theme #sidebar,
+  body.showgirl-theme #chat-sidebar {
+      background: var(--board-bg); 
+  }
+
+  /* NEWSPAPER THEME */
+  body.newspaper-theme {
+    --bg-color: #f4f1ea; 
+    --board-bg: #ffffff;
+    --nyt-black: #111111; 
+    --highlight-blue: #888;
+    --legal-move-gold: #dcdcdc; 
+    --dimmed-cell: #f4f1ea;
+    --line-thin: #ccc;
+    --line-med: #666;
+    --line-thick: #000;
+    --text-subtle: #444;
+    --btn-hover: #e0e0e0;
+    
+    --chat-bg-x: #e5e5e5;
+    --chat-bg-o: #d4d4d4;
+    --chat-text: #000;
+
+    font-family: 'Playfair Display', serif; 
+  }
+  body.newspaper-theme button { font-family: 'Playfair Display', serif; }
+
+  /* RAINBOW THEME */
+  body.rainbow-theme {
+    /* VIBRANT, MODERN GRADIENT */
+    background: linear-gradient(
+      -45deg, 
+      #ff5e6c, #ff9f43, #feca57, #2ed573, #54a0ff, #a55eea
+    );
+    background-size: 400% 400%;
+    animation: rainbowBG 30s ease infinite;
+
+    --board-bg: rgba(255, 255, 255, 0.94); 
+    --nyt-black: #555; 
+    --highlight-blue: #a1c4fd;
+    --legal-move-gold: #fff9c4; 
+    --dimmed-cell: rgba(255, 255, 255, 0.5);
+    --line-thin: #e0e0e0; 
+    --line-med: #bbb; 
+    --line-thick: #555; 
+    --text-subtle: #777;
+    --btn-hover: #f0f0f0;
+    
+    --glow-text: none;
+    --glow-box: 0 10px 25px rgba(186, 225, 255, 0.4); 
+
+    --gradient-btn: linear-gradient(to right, #ff5e6c, #feca57, #2ed573, #54a0ff);
+
+    --chat-bg-x: #ffd1d6; 
+    --chat-bg-o: #d1e8ff; 
+    --chat-text: #444;
+  }
+
+  @keyframes rainbowBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: var(--bg-color);
+    font-family: var(--font-ui); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--nyt-black);
+    overflow: hidden; 
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ---------------- BUTTONS ---------------- */
+  .pill-btn {
+    background: var(--nyt-black); 
+    color: var(--bg-color);
+    padding: 16px 40px;
+    border: none;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+    min-width: 200px;
+    box-shadow: var(--glow-box);
+    position: relative; z-index: 1;
+  }
+  .pill-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+  
+  body.rainbow-theme .pill-btn {
+    background: var(--gradient-btn);
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  
+  body.newspaper-theme .pill-btn {
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
+  }
+  body.newspaper-theme .pill-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0px rgba(0,0,0,0.25);
+  }
+
+  .secondary-btn {
+    background: transparent;
+    color: var(--nyt-black);
+    border: 2px solid var(--line-med);
+    box-shadow: none; 
+  }
+  .secondary-btn:hover { background: var(--btn-hover); transform: translateY(-2px); border-color: var(--nyt-black); }
+  body.rainbow-theme .secondary-btn:hover { background: rgba(255,255,255,0.7); }
+
+  .action-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid var(--line-med);
+    background: var(--board-bg);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--nyt-black);
+    transition: all 0.2s;
+    font-family: var(--font-ui);
+  }
+  .action-btn:hover { background: var(--btn-hover); border-color: var(--nyt-black); }
+  .danger-btn:hover { background: #500; color: white; border-color: #d93a3a; }
+
+  /* ---------------- SCREENS ---------------- */
+  .screen {
+    position: absolute; inset: 0;
+    background: var(--bg-color);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 100; transition: opacity 0.4s ease;
+  }
+  body.rainbow-theme .screen { background: transparent; }
+  .hidden { opacity: 0; pointer-events: none; z-index: -1; }
+
+  #title { font-family: var(--font-title); font-size: 5rem; font-weight: 900; color: var(--nyt-black); letter-spacing: -0.03em; margin-bottom: 10px; text-shadow: var(--glow-text); }
+  #title sup { font-family: var(--font-title); font-size: 2rem; font-weight: 900; top: -2.5rem; position: relative; color: var(--nyt-black); text-shadow: var(--glow-text); }
+
+  #mode-screen h2, #settings-screen h2, #themes-screen h2, #friend-select-screen h2, #online-lobby-screen h2, #name-input-screen h2, #side-select-screen h2 { 
+    font-family: var(--font-title); font-size: 3rem; margin-bottom: 40px; text-shadow: var(--glow-text);
+  }
+  .mode-options { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+
+  /* ---------------- SETTINGS & THEMES ---------------- */
+  .settings-group { margin-bottom: 30px; text-align: center; }
+  .settings-label { font-weight: 700; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; color: var(--text-subtle); margin-bottom: 15px; display: block; text-shadow: var(--glow-text); }
+  .option-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 10px; }
+
+  .select-btn {
+    background: var(--board-bg); border: 1px solid var(--line-med); color: var(--nyt-black);
+    padding: 12px 24px; border-radius: 8px; cursor: pointer; font-family: var(--font-ui);
+    font-weight: 600; transition: all 0.2s; min-width: 80px;
+  }
+  .select-btn:hover { border-color: var(--nyt-black); }
+  .select-btn.selected { background: var(--nyt-black); color: var(--bg-color); border-color: var(--nyt-black); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  
+  #btn-side-x.selected { background: #d93a3a; border-color: #d93a3a; color: white; }
+  #btn-side-o.selected { background: #3a7bd9; border-color: #3a7bd9; color: white; }
+  
+  body.showgirl-theme #btn-side-x.selected { background: #00c897; border-color: #00c897; } 
+  body.showgirl-theme #btn-side-o.selected { background: #ff9100; border-color: #ff9100; }
+  body.rainbow-theme .select-btn.selected { background: var(--gradient-btn); color: #fff; border: none; }
+  body.rainbow-theme #btn-side-x.selected { background: #d93a3a; color: white; }
+  body.rainbow-theme #btn-side-o.selected { background: #3a7bd9; color: white; }
+  body.newspaper-theme .select-btn.selected { background: #000; color: #fff; box-shadow: 3px 3px 0 rgba(0,0,0,0.3); }
+
+  /* ---------------- INPUTS ---------------- */
+  input[type="text"] {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: 1px solid var(--line-med);
+    border-radius: 8px;
+    background: var(--board-bg);
+    color: var(--nyt-black);
+    font-family: var(--font-ui);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--nyt-black); }
+
+  /* ---------------- MODALS ---------------- */
+  .modal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.9); backdrop-filter: blur(5px);
+    z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  body.dark-theme .modal-overlay, body.stranger-theme .modal-overlay { background: rgba(0,0,0,0.9); }
+  body.showgirl-theme .modal-overlay { background: rgba(255, 243, 224, 0.95); }
+  body.rainbow-theme .modal-overlay { background: rgba(255, 255, 255, 0.85); }
+  body.newspaper-theme .modal-overlay { background: rgba(244, 241, 234, 0.95); }
+  .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+  /* PAUSE OVERLAY: SPECIFIC TO BOARD NOW */
+  .board-overlay {
+    position: absolute; inset: 0; 
+    background: rgba(255,255,255,0.8); backdrop-filter: blur(3px);
+    z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .board-overlay.active { opacity: 1; pointer-events: auto; }
+  
+  body.dark-theme .board-overlay { background: rgba(0,0,0,0.8); }
+  body.stranger-theme .board-overlay { background: rgba(0,0,0,0.85); }
+
+  #win-title { font-family: var(--font-title); font-size: 6rem; font-weight: 900; margin-bottom: 20px; text-shadow: var(--glow-text); }
+  
+  .big-pause-icon { width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; color: var(--nyt-black); filter: drop-shadow(var(--glow-text)); }
+  .big-pause-icon::after { content: ''; display: block; width: 15px; height: 50px; background-color: currentColor; box-shadow: 25px 0 0 0 currentColor; transform: translateX(-12px); }
+  #paused-time { font-family: var(--font-ui); font-size: 2.5rem; font-weight: 600; margin-top: 10px; font-variant-numeric: tabular-nums; color: var(--nyt-black); text-shadow: var(--glow-text); }
+
+  /* ---------------- GAME LAYOUT (3 Columns) ---------------- */
+  #game-wrapper { 
+    display: flex; gap: 25px; align-items: flex-start; padding-top: 20px; 
+    opacity: 0; transition: opacity 0.6s ease; 
+    width: 100%; justify-content: center;
+  }
+  
+  /* Board in Center */
+  #board-container { position: relative; width: 85vmin; height: 85vmin; max-width: 700px; max-height: 700px; flex-shrink: 0; }
+  
+  #board {
+    width: 100%; height: 100%; display: grid;
+    grid-template-columns: repeat(27, 1fr); grid-template-rows: repeat(27, 1fr);
+    background: var(--board-bg); border: 4px solid var(--nyt-black); box-sizing: border-box;
+    transition: background 0.3s, border-color 0.3s;
+    box-shadow: var(--glow-box); 
+  }
+  
+  .cell {
+    border-right: 1px solid var(--line-thin); border-bottom: 1px solid var(--line-thin);
+    font-family: var(--font-ui); font-size: calc(85vmin / 27 * 0.6);
+    font-weight: 600; display: flex; justify-content: center; align-items: center;
+    cursor: pointer; user-select: none; transition: background 0.1s; color: var(--nyt-black); box-sizing: border-box;
+  }
+  @media (min-width: 800px) { .cell { font-size: 1.2rem; } }
+
+  .cell.b-right-med { border-right: 1px solid var(--line-med); }
+  .cell.b-bottom-med { border-bottom: 1px solid var(--line-med); }
+  .cell.b-right-thick { border-right: 3px solid var(--line-thick); }
+  .cell.b-bottom-thick { border-bottom: 3px solid var(--line-thick); }
+  .cell[data-col="26"] { border-right: none !important; }
+  .cell[data-row="26"] { border-bottom: none !important; }
+
+  .cell.legal-zone { background: var(--legal-move-gold); }
+  .cell.legal-zone:hover { filter: brightness(0.95); }
+  body.dark-theme .cell.legal-zone:hover { filter: brightness(1.2); }
+  
+  .cell.disabled-zone { background: var(--dimmed-cell); cursor: default; }
+  
+  .cell.x-mark { color: #d93a3a; text-shadow: var(--glow-text); }
+  .cell.o-mark { color: #3a7bd9; text-shadow: var(--glow-text); }
+  
+  body.stranger-theme .cell.x-mark { color: #ff0000; }
+  body.stranger-theme .cell.o-mark { color: #ffffff; text-shadow: 0 0 5px white; }
+  body.showgirl-theme .cell.x-mark { color: #00c897; }
+  body.showgirl-theme .cell.o-mark { color: #ff9100; }
+  body.newspaper-theme .cell.x-mark { color: #000; text-shadow: none; }
+  body.newspaper-theme .cell.o-mark { color: #000; text-shadow: none; }
+  body.rainbow-theme .cell.x-mark { color: #d93a3a; text-shadow: none; }
+  body.rainbow-theme .cell.o-mark { color: #3a7bd9; text-shadow: none; }
+  
+  .label-strip { position: absolute; display: grid; font-size: 0.65rem; color: var(--text-subtle); font-weight: 500; pointer-events: none; }
+  #col-labels { top: -20px; left: 0; width: 100%; height: 20px; grid-template-columns: repeat(27, 1fr); align-items: end; justify-items: center; padding-bottom: 4px; box-sizing: border-box; }
+  #row-labels { left: -25px; top: 0; height: 100%; width: 25px; grid-template-rows: repeat(27, 1fr); align-items: center; justify-items: end; padding-right: 6px; box-sizing: border-box; }
+
+  /* --- OVERLAY FIXES --- */
+  .won-overlay {
+    position: absolute; display: flex; justify-content: center; align-items: center;
+    font-family: var(--font-title); font-weight: 900;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;
+    box-sizing: border-box; transform-origin: center;
+  }
+
+  .won-middle-grid { 
+      font-size: 3rem; z-index: 10; 
+      background: rgba(255, 255, 255, 0.6); 
+      border: none; box-shadow: none; transform: scale(0.9);
+  }
+  body.dark-theme .won-middle-grid { background: rgba(30, 30, 30, 0.6); }
+  body.stranger-theme .won-middle-grid { background: rgba(0, 0, 0, 0.6); }
+  body.showgirl-theme .won-middle-grid { background: rgba(255, 243, 224, 0.6); }
+  body.rainbow-theme .won-middle-grid { background: rgba(255, 255, 255, 0.5); }
+  body.newspaper-theme .won-middle-grid { background: rgba(255, 255, 255, 0.8); border: 2px solid #000; }
+  
+  .won-big-grid { 
+      font-size: 10rem; z-index: 20; 
+      background: rgba(255, 255, 255, 0.6); 
+      border: none; transform: scale(0.9);
+  }
+  body.dark-theme .won-big-grid { background: rgba(20, 20, 20, 0.6); }
+  body.stranger-theme .won-big-grid { background: rgba(20, 20, 20, 0.6); }
+  body.showgirl-theme .won-big-grid { background: rgba(255, 243, 224, 0.6); }
+  body.rainbow-theme .won-big-grid { background: rgba(255, 255, 255, 0.5); }
+  body.newspaper-theme .won-big-grid { background: rgba(255, 255, 255, 0.9); border: 4px solid #000; }
+
+  .winner-X { color: #d93a3a; text-shadow: var(--glow-text); }
+  .winner-O { color: #3a7bd9; text-shadow: var(--glow-text); }
+  body.stranger-theme .winner-X { color: #ff0000; }
+  body.stranger-theme .winner-O { color: #fff; }
+  body.showgirl-theme .winner-X { color: #00c897; }
+  body.showgirl-theme .winner-O { color: #ff9100; }
+  body.newspaper-theme .winner-X { color: #000; text-shadow: none; }
+  body.newspaper-theme .winner-O { color: #000; text-shadow: none; }
+  body.rainbow-theme .winner-X { color: #d93a3a; text-shadow: 0 0 5px white; }
+  body.rainbow-theme .winner-O { color: #3a7bd9; text-shadow: 0 0 5px white; }
+
+  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(0.9); opacity: 1; } }
+
+  /* ---------------- SIDEBARS ---------------- */
+  #sidebar, #chat-sidebar {
+    width: 260px; height: 85vmin; max-height: 700px;
+    padding: 20px; box-sizing: border-box;
+    background: var(--board-bg); border: 1px solid var(--line-med);
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+    transition: background 0.3s;
+    box-shadow: var(--glow-box);
+    flex-shrink: 0;
+  }
+  
+  /* Left Sidebar (Chat) */
+  #chat-sidebar {
+    padding: 0; /* Reset padding for chat layout */
+    display: none; /* Hidden unless online */
+  }
+
+  /* Info Sidebar (Right) specific adjustments if needed */
+  #turn-display-container { width: 100%; border-bottom: 1px solid var(--line-thin); padding-bottom: 20px; text-align: center; margin-bottom: 10px; }
+  .label-text { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-subtle); margin-bottom: 10px; text-shadow: var(--glow-text); }
+  #big-mark { font-family: var(--font-title); font-size: 5rem; line-height: 1; font-weight: 900; text-shadow: var(--glow-text); }
+  .turn-x #big-mark { color: #d93a3a; }
+  .turn-o #big-mark { color: #3a7bd9; }
+  
+  body.stranger-theme .turn-x #big-mark { color: #ff0000; }
+  body.stranger-theme .turn-o #big-mark { color: #fff; }
+  body.showgirl-theme .turn-x #big-mark { color: #00c897; }
+  body.showgirl-theme .turn-o #big-mark { color: #ff9100; }
+  body.newspaper-theme .turn-x #big-mark { color: #000; }
+  body.newspaper-theme .turn-o #big-mark { color: #000; }
+  body.rainbow-theme .turn-x #big-mark { color: #d93a3a; }
+  body.rainbow-theme .turn-o #big-mark { color: #3a7bd9; }
+
+  #timer-container { width: 100%; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--line-thin); }
+  .timer-row { display: flex; justify-content: center; align-items: center; gap: 12px; }
+  #timer-display { font-family: var(--font-ui); font-variant-numeric: tabular-nums; font-size: 1.2rem; font-weight: 600; color: var(--nyt-black); text-shadow: var(--glow-text); }
+  
+  .control-btn {
+    background: var(--board-bg); border: 1px solid var(--line-med); width: 32px; height: 32px;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    cursor: pointer; color: var(--nyt-black); transition: all 0.2s; user-select: none;
+    position: relative; font-size: 1.2rem; line-height: 1; z-index: 2;
+  }
+  .control-btn:hover { background: var(--nyt-black); color: var(--bg-color); border-color: var(--nyt-black); }
+  #pause-btn::after { content: ''; display: block; width: 4px; height: 12px; background-color: currentColor; box-shadow: 6px 0 0 0 currentColor; transform: translateX(-3px); }
+
+  #log-wrapper { width: 100%; flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; margin-bottom: 20px; }
+  #activity-log { width: 100%; overflow-y: auto; padding-right: 4px; scrollbar-width: thin; scrollbar-color: var(--line-med) transparent; }
+  #activity-log::-webkit-scrollbar { width: 4px; }
+  #activity-log::-webkit-scrollbar-thumb { background-color: var(--line-med); border-radius: 4px; }
+  
+  .log-entry { font-size: 0.85rem; color: var(--text-subtle); padding: 8px 0; border-bottom: 1px solid var(--line-thin); animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 8px; text-shadow: var(--glow-text); }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  .log-mark { font-weight: 800; font-family: var(--font-title); font-size: 0.9rem; }
+  .log-x { color: #d93a3a; }
+  .log-o { color: #3a7bd9; }
+  
+  body.stranger-theme .log-x { color: #ff0000; }
+  body.stranger-theme .log-o { color: #fff; }
+  body.showgirl-theme .log-x { color: #00c897; }
+  body.showgirl-theme .log-o { color: #ff9100; }
+  body.newspaper-theme .log-x { color: #000; }
+  body.newspaper-theme .log-o { color: #000; }
+  body.rainbow-theme .log-x { color: #d93a3a; }
+  body.rainbow-theme .log-o { color: #3a7bd9; }
+
+  #sidebar-actions { width: 100%; display: flex; flex-direction: column; gap: 0; margin-top: auto; align-items: center; }
+  #bottom-controls { width: 100%; display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+
+  /* ---------------- CHAT STYLES ---------------- */
+  #chat-header-bar {
+    padding: 15px; border-bottom: 1px solid var(--line-thin);
+    text-align: center; width: 100%; box-sizing: border-box;
+  }
+  #chat-messages-area {
+    flex-grow: 1; overflow-y: auto; padding: 15px; width: 100%; box-sizing: border-box;
+    display: flex; flex-direction: column; gap: 8px;
+    font-size: 0.9rem;
+    scrollbar-width: thin;
+  }
+  .chat-msg { padding: 8px 12px; border-radius: 8px; max-width: 90%; word-wrap: break-word; font-size: 0.85rem; }
+  
+  /* FORCE OVERRIDE: Specific selectors to ensure color applies */
+  .chat-msg.mine.msg-x, .chat-msg.theirs.msg-x { background: var(--chat-bg-x); color: var(--chat-text); }
+  .chat-msg.mine.msg-o, .chat-msg.theirs.msg-o { background: var(--chat-bg-o); color: var(--chat-text); }
+  
+  /* Fallback if no side assigned yet */
+  .chat-msg.mine { background: var(--highlight-blue); }
+  .chat-msg.theirs { background: var(--btn-hover); }
+
+  /* Alignment based on Sender */
+  .chat-msg.mine { align-self: flex-end; }
+  .chat-msg.theirs { align-self: flex-start; }
+  
+  /* SYSTEM MESSAGE STYLE */
+  .chat-msg.system {
+    align-self: center; background: transparent !important; color: var(--text-subtle) !important;
+    font-style: italic; font-size: 0.8rem; text-align: center; padding: 4px 0; border: none;
+  }
+
+  .chat-name { font-size: 0.7rem; font-weight: 700; margin-bottom: 2px; opacity: 0.7; }
+  
+  /* FIXED: Chat Input Bar to prevent button overflow */
+  #chat-input-bar {
+    padding: 10px; border-top: 1px solid var(--line-thin);
+    display: flex; gap: 5px; width: 100%; box-sizing: border-box;
+  }
+  #chat-input {
+    flex: 1 1 auto; /* Allow grow and shrink */
+    min-width: 0; /* Prevent overflow */
+    padding: 8px; border: 1px solid var(--line-med); border-radius: 4px;
+    background: var(--bg-color); color: var(--nyt-black); font-size: 0.9rem;
+  }
+  #chat-send { 
+    flex: 0 0 auto; /* Don't shrink */
+    background: var(--nyt-black); color: var(--bg-color); border: none; 
+    padding: 0 12px; border-radius: 4px; cursor: pointer; 
+  }
+  
+  .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 350px; margin-bottom: 20px; }
 
         .hidden {
             display: none !important;
@@ -51,29 +554,20 @@
             pointer-events: none;
         }
 
-        h1 { font-size: 3rem; margin-bottom: 2rem; }
-        h2 { margin-bottom: 1.5rem; }
-
-        button {
-            padding: 12px 24px;
-            font-size: 1.2rem;
-            margin: 10px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--accent);
-            color: white;
-            transition: transform 0.1s, opacity 0.2s;
+        /* Helper to ensure screens cover the game */
+        .screen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            background-color: inherit; /* Matches your background */
         }
-        button:hover { opacity: 0.9; transform: scale(1.05); }
-        button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
-        .danger-btn { background-color: #e74c3c; }
-        .secondary-btn { background-color: #7f8c8d; }
-        .selected { border: 3px solid #000; transform: scale(1.05); font-weight: bold; }
-
-        input { padding: 10px; font-size: 1.2rem; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 1rem; }
-
-        /* --- GAME WRAPPER --- */
+        
+        /* Helper for the game board layout */
         #game-wrapper {
             display: flex;
             gap: 20px;
@@ -81,45 +575,8 @@
             opacity: 0; 
             transition: opacity 0.6s ease;
         }
-        
-        /* THE BOARD: 27x27 Grid */
-        #main-area { position: relative; }
-        #board {
-            display: grid;
-            grid-template-columns: repeat(27, 20px); /* 27 cells wide */
-            grid-template-rows: repeat(27, 20px);
-            border: 3px solid var(--line-thick);
-            background: white;
-            user-select: none;
-        }
 
-        .cell {
-            width: 20px;
-            height: 20px;
-            border-right: 1px solid var(--line-thin);
-            border-bottom: 1px solid var(--line-thin);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        /* Thicker Borders for the "Big" and "Middle" grids */
-        .b-right-med { border-right: 2px solid var(--line-med); }
-        .b-bottom-med { border-bottom: 2px solid var(--line-med); }
-        .b-right-thick { border-right: 3px solid var(--line-thick); }
-        .b-bottom-thick { border-bottom: 3px solid var(--line-thick); }
-
-        /* Zones */
-        .legal-zone { background-color: rgba(0, 255, 0, 0.05); }
-        .legal-zone:hover { background-color: rgba(0, 255, 0, 0.2); }
-        .disabled-zone { background-color: rgba(0, 0, 0, 0.05); cursor: default; }
-        
-        .x-mark { color: #e74c3c; font-weight: bold; }
-        .o-mark { color: #3498db; font-weight: bold; }
-
-        /* Overlays for won grids */
+        /* Styling for the Won Overlays (Big letters on top of grid) */
         .won-overlay {
             position: absolute;
             display: flex;
@@ -130,55 +587,29 @@
             opacity: 0.6;
             pointer-events: none;
         }
-        .winner-X { color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
-        .winner-O { color: #3498db; background: rgba(52, 152, 219, 0.1); }
+        .winner-X { color: red; background: rgba(255, 0, 0, 0.1); }
+        .winner-O { color: blue; background: rgba(0, 0, 255, 0.1); }
 
-        /* --- SIDEBAR --- */
-        #sidebar {
-            width: 250px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .label-strip { display: flex; position: absolute; pointer-events: none; }
-        #col-labels { top: -20px; left: 0; width: 100%; justify-content: space-around; font-size: 10px; }
-        #row-labels { left: -20px; top: 0; height: 100%; flex-direction: column; justify-content: space-around; font-size: 10px; }
-
-        #turn-display-container {
-            background: #fff; padding: 15px; border-radius: 8px; text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        #big-mark { font-size: 3rem; font-weight: bold; }
-        .turn-x #big-mark { color: #e74c3c; }
-        .turn-o #big-mark { color: #3498db; }
-
-        #log-wrapper {
-            background: #fff; height: 150px; border-radius: 8px; padding: 10px;
-            overflow-y: auto; font-size: 0.9rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .log-entry { padding: 4px 0; border-bottom: 1px solid #eee; }
-
+        /* Styling for the new Chat Box */
         #chat-sidebar {
             display: none; /* Flex when online */
             flex-direction: column;
             height: 200px;
-            background: #fff;
-            border-radius: 8px;
+            border: 1px solid #ccc;
             padding: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 10px;
+            background: rgba(255,255,255,0.9);
         }
-        #chat-messages-area { flex: 1; overflow-y: auto; font-size: 0.85rem; margin-bottom: 5px; }
-        .chat-msg { margin-bottom: 4px; }
-        .chat-msg.system { color: #888; font-style: italic; }
-        .chat-msg.mine { color: #2ecc71; text-align: right; }
-        .chat-msg.theirs { color: #3498db; text-align: left; }
+        #chat-messages-area { flex: 1; overflow-y: auto; margin-bottom: 5px; text-align: left;}
+        .chat-msg { margin-bottom: 4px; font-size: 0.8rem; }
+        .chat-msg.system { font-style: italic; opacity: 0.7; }
+        .chat-msg.mine { color: green; text-align: right; }
+        .chat-msg.theirs { color: blue; text-align: left; }
 
-        /* --- MODALS --- */
+        /* Modal Base */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             display: flex; justify-content: center; align-items: center;
             z-index: 100;
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
@@ -186,15 +617,17 @@
         .modal.active { opacity: 1; pointer-events: all; }
         .modal-content {
             background: white; padding: 30px; border-radius: 10px;
-            text-align: center; max-width: 400px; width: 90%;
+            text-align: center; max-width: 400px; width: 90%; color: black;
         }
+
     </style>
 </head>
 <body>
 
     <div id="start-screen" class="screen">
         <h1>Ultimate Tic-Tac-Toe</h1>
-        <div style="font-size: 1.5rem; margin-bottom: 20px;">Level 3 (27x27)</div>
+        <div>Level 3 (27x27)</div>
+        <br>
         <button id="main-play-btn">Play Game</button>
     </div>
 
@@ -202,7 +635,7 @@
         <h2>Select Mode</h2>
         <button id="friend-mode-btn">Play vs Friend</button>
         <button id="computer-mode-btn">Play vs Computer</button>
-        <div style="margin-top: 20px;"></div>
+        <br><br>
         <button id="themes-menu-btn" class="secondary-btn">Themes</button>
     </div>
 
@@ -210,12 +643,14 @@
         <h2>Multiplayer</h2>
         <button id="local-friend-btn">Local (Same Device)</button>
         <button id="online-friend-btn">Online (Different Device)</button>
+        <br><br>
         <button id="friend-back-btn" class="secondary-btn">Back</button>
     </div>
 
     <div id="name-input-screen" class="screen hidden">
         <h2>Enter Your Name</h2>
         <input type="text" id="player-name-input" placeholder="Your Name" maxlength="12">
+        <br><br>
         <div>
             <button id="confirm-name-btn">Continue</button>
             <button id="name-back-btn" class="secondary-btn">Back</button>
@@ -228,30 +663,32 @@
             <button id="host-pick-x" class="side-btn">Play as X</button>
             <button id="host-pick-o" class="side-btn">Play as O</button>
         </div>
+        <br>
         <button id="side-back-btn" class="secondary-btn">Back</button>
     </div>
 
     <div id="online-lobby-screen" class="screen hidden">
         <h2>Invite Your Friend</h2>
         <p>Send this link to your friend:</p>
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">
             <input type="text" id="invite-link" readonly style="width:300px;">
-            <button id="copy-link-btn" style="margin:0; padding:10px;">Copy</button>
+            <button id="copy-link-btn" style="margin:0;">Copy</button>
         </div>
         <div id="connection-status" style="font-weight:bold; color:orange;">Waiting for connection...</div>
+        <br>
         <button id="lobby-back-btn" class="secondary-btn">Cancel</button>
     </div>
 
     <div id="settings-screen" class="screen hidden">
         <h2>Computer Settings</h2>
         <p>Select Difficulty:</p>
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">
             <button class="diff-btn selected" id="btn-diff-easy" onclick="selectDifficulty('easy')">Easy</button>
             <button class="diff-btn" id="btn-diff-medium" onclick="selectDifficulty('medium')">Medium</button>
             <button class="diff-btn" id="btn-diff-hard" onclick="selectDifficulty('hard')">Hard</button>
         </div>
         <p>Select Side:</p>
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">
             <button class="side-btn selected" id="btn-side-x" onclick="selectSide('X')">Play as X</button>
             <button class="side-btn" id="btn-side-o" onclick="selectSide('O')">Play as O</button>
         </div>
@@ -282,7 +719,7 @@
                 <div id="big-mark">X</div>
             </div>
 
-            <div id="timer-container" style="background:white; padding:10px; border-radius:8px; text-align:center;">
+            <div id="timer-container" style="padding:10px; margin-top:10px; text-align:center; border:1px solid #ccc;">
                 <div class="label-text">Timer</div>
                 <div class="timer-row">
                     <div id="timer-display" style="font-size:1.5rem; font-family:monospace;">00:00</div>
@@ -290,8 +727,8 @@
                 </div>
             </div>
 
-            <div id="log-wrapper">
-                <div class="label-text" style="text-align: left; border-bottom: 1px solid var(--line-thin); padding-bottom: 5px;">Move History</div>
+            <div id="log-wrapper" style="margin-top:10px; max-height:150px; overflow-y:auto; border:1px solid #ccc; padding:5px;">
+                <div class="label-text" style="text-align: left; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Move History</div>
                 <div id="activity-log"></div>
             </div>
 
@@ -303,8 +740,8 @@
                 </div>
             </div>
 
-            <div id="sidebar-actions">
-                <div id="bottom-controls" style="display:flex; justify-content:space-between;">
+            <div id="sidebar-actions" style="margin-top:20px;">
+                <div id="bottom-controls" style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <button id="sound-btn" class="control-btn">🔊</button>
                     <button id="theme-open-btn" class="control-btn">🎨</button>
                 </div>
